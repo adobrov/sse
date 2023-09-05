@@ -96,6 +96,11 @@ func (c *Client) SubscribeWithContext(ctx context.Context, stream string, handle
 		}
 		defer resp.Body.Close()
 
+		if !c.Connected && c.connectedcb != nil {
+			c.connectedcb(c)
+		}
+		c.Connected = true
+
 		reader := NewEventStreamReader(resp.Body, c.maxBufferSize)
 		eventChan, errorChan := c.startReadLoop(reader)
 
